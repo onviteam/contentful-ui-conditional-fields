@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DisplayText, Paragraph, Form } from '@contentful/forma-36-react-components';
-import { LAYOUT_OVERWRITES } from './constants';
+import { FIELDS, LAYOUT_OVERWRITES } from './constants';
 import { unslugify } from './helpers';
 import { renderWidget } from './renderWidget';
 import '@contentful/forma-36-react-components/dist/styles.css';
@@ -17,35 +17,50 @@ class App extends Component {
     super(props);
 
     const fields = this.props.sdk.entry.fields;
-    const layout = LAYOUT_OVERWRITES[fields.layout?.getValue()] || {};
+    const initialLayoutId = fields?.[FIELDS.Layout]?.getValue();
 
     this.state = {
-      fields: Object.keys(fields).map(fieldId => {
-        const field = fields[fieldId];
-        const overrides = layout[fieldId] || {};
-        return {
-          id: field.id,
-          type: field.type,
-          required: field.required,
-          disabled: false, // TODO: fetch from CT API
-          omitted: false, // TODO: fetch from CT API
-          label: unslugify(field.id), // TODO: fetch from CT API
-          value: field.getValue(),
-          options: field.validations?.[0]?.in || [],
-          ...overrides
-        };
-      })
+      layout: LAYOUT_OVERWRITES[initialLayoutId] || {}
     };
+
+    this.state.fields = Object.entries(fields).map(([fieldId, field]) => {
+      const fieldOverrides = this.state.layout[fieldId] || {};
+      return {
+        id: field.id,
+        type: field.type,
+        required: field.required,
+        disabled: false, // TODO: fetch from CT API
+        omitted: false, // TODO: fetch from CT API
+        label: unslugify(field.id), // TODO: fetch from CT API
+        value: field.getValue(),
+        options: field.validations?.[0]?.in || [],
+        ...fieldOverrides
+      };
+    });
   }
 
-  onFieldChangeHandler = fieldId => event => {
-    const value = event.target.value;
-    this.setState(state => ({
-      fields: state.fields.map(field => (field.id === fieldId ? { ...field, value } : field))
-    }));
+  onFieldChangeHandler = fieldId => async ({ target }) => {
+    const { name, value } = target;
+    const isLayoutField = name.endsWith(FIELDS.Layout);
+    const layout = (isLayoutField && LAYOUT_OVERWRITES[value]) || this.state.layout;
+
+    this.setState(state => {
+      const newState = {
+        ...(isLayoutField ? { layout: value } : {}),
+        fields: state.fields.map(field => {
+          const fieldOverrides = (isLayoutField && layout[field.id]) || {};
+          return {
+            ...field,
+            ...fieldOverrides,
+            ...(field.id === fieldId ? [value] : [])
+          };
+        })
+      };
+      return newState;
+    });
 
     try {
-      this.props.sdk.entry.fields[fieldId].setValue(value);
+      await this.props.sdk.entry.fields[fieldId].setValue(value);
       this.props.sdk.notifier.success(`Saved "${fieldId}" field successfully`);
     } catch (error) {
       this.props.sdk.notifier.error(`Error saving field "${fieldId}"`);
@@ -57,9 +72,7 @@ class App extends Component {
       <Form className="f36-margin--l">
         <DisplayText>Create a Block</DisplayText>
         <Paragraph>One content type to rule them all.</Paragraph>
-        {Object.values(this.state.fields).map(field =>
-          renderWidget(field, this.onFieldChangeHandler(field.id))
-        )}
+        {this.state.fields.map(field => renderWidget(field, this.onFieldChangeHandler(field.id)))}
       </Form>
     );
   }

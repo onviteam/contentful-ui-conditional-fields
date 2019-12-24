@@ -61,4 +61,4 @@ const LAYOUT_OVERWRITES = {
   Webinar: null
 };
 
-export { FIELD_TYPES, LAYOUT_OVERWRITES };
+export { FIELDS, FIELD_TYPES, LAYOUT_OVERWRITES };

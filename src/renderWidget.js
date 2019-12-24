@@ -15,12 +15,13 @@ function renderWidget(field, changeHandler) {
   if (field.omitted) {
     return null;
   }
+
   const ids = {
     field: `field-${field.id}`,
     wrapper: `field-wrapper-${field.id}`
   };
-  const value = field.value;
-  const disabled = field.disabled;
+
+  const { disabled, required, value } = field;
 
   switch (field.type) {
     case FIELD_TYPES.Symbol:
@@ -34,11 +35,13 @@ function renderWidget(field, changeHandler) {
               id={ids.field}
               name={ids.field}
               value={value}
-              disabled={field.disabled}
-              required={field.required}
+              disabled={disabled}
+              required={required}
               onChange={changeHandler}>
               {field.options.map(option => (
-                <Option key={option}>{option}</Option>
+                <Option value={option} key={option}>
+                  {option}
+                </Option>
               ))}
             </SelectField>
           </div>
@@ -51,21 +54,22 @@ function renderWidget(field, changeHandler) {
         <div id={ids.wrapper} key={ids.field}>
           <SectionHeading>{field.label}</SectionHeading>
           <Textarea
-            testId={ids.field}
             disabled={disabled}
-            required={field.required}
-            onChange={changeHandler}
+            required={required}
+            testId={ids.field}
             value={value}
+            onChange={changeHandler}
           />
         </div>
       );
     case FIELD_TYPES.Array:
     case FIELD_TYPES.Listing:
+      // https://github.com/contentful-labs/ui-reference-quick-select/blob/master/index.html
       return (
         <div id={ids.wrapper} key={ids.field}>
           <SectionHeading>{field.label}</SectionHeading>
           <p>Widget in progress</p>
-          <EntityList>
+          <EntityList disabled={disabled} required={required}>
             <EntityListItem
               title="Entry 1"
               description="Work in progress"

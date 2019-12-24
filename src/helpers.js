@@ -9,4 +9,4 @@ function unslugify(str) {
   return newStr;
 }
 
-export { unslugify };
+export { toTitleCase, unslugify };
