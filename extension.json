@@ -1,0 +1,5 @@
+{
+  "id": "contentful-ui-conditional-fields",
+  "name": "contentful-ui-conditional-fields",
+  "srcdoc": "./build/index.html"
+}
