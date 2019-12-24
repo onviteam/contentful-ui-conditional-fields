@@ -38,6 +38,9 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
+  "resolutions": {
+    "parcel-bundler": "1.12.4"
+  },
   "browserslist": [
     "last 5 Chrome version",
     "> 1%",
