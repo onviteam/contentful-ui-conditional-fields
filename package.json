@@ -12,7 +12,7 @@
     "@babel/preset-react": "7.0.0",
     "@testing-library/react": "8.0.4",
     "cssnano": "4.1.10",
-    "contentful-cli": "0.33.2",
+    "contentful-cli": "1.2.3",
     "eslint": "^6.0.1"
   },
   "scripts": {
@@ -28,10 +28,10 @@
     "help": "contentful-extension-scripts help"
   },
   "dependencies": {
-    "@contentful/forma-36-fcss": "^0.0.20",
-    "@contentful/forma-36-react-components": "^3.11.3",
-    "@contentful/forma-36-tokens": "^0.3.0",
-    "contentful-ui-extensions-sdk": "3.9.0",
+    "@contentful/forma-36-fcss": "^0.0.32",
+    "@contentful/forma-36-react-components": "^3.27.3",
+    "@contentful/forma-36-tokens": "^0.5.1",
+    "contentful-ui-extensions-sdk": "3.10.3",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"

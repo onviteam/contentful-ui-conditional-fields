@@ -14,10 +14,11 @@ yarn-error.log*
 
 # Dependency directories
 node_modules/
+package-lock.json
 
 # Coverage
 .coverage
 
 # Build
-build/*
+build
 !/build/index.html
