@@ -8,6 +8,11 @@ import '@contentful/forma-36-react-components/dist/styles.css';
 import '@contentful/forma-36-fcss/dist/styles.css';
 import './index.css';
 
+const getValidationRules = (field, validationKey) => {
+  const validation = field.validations.find(v => v[validationKey]);
+  return validation[validationKey] || [];
+};
+
 class App extends Component {
   static propTypes = {
     sdk: PropTypes.object.isRequired
@@ -33,7 +38,8 @@ class App extends Component {
         omitted: false, // TODO: fetch from CT API
         label: unslugify(field.id), // TODO: fetch from CT API
         value: field.getValue(),
-        options: field.validations?.[0]?.in || [],
+        options: getValidationRules(field, 'in'),
+        validations: field.validations,
         ...fieldOverrides
       };
     });
@@ -72,7 +78,23 @@ class App extends Component {
       <Form className="f36-margin--l">
         <DisplayText>Create a Block</DisplayText>
         <Paragraph>One content type to rule them all.</Paragraph>
-        {this.state.fields.map(field => renderWidget(field, this.onFieldChangeHandler(field.id)))}
+        {this.state.fields.map(field =>
+          renderWidget(field, {
+            fieldChange: this.onFieldChangeHandler(field.id),
+            entryCreate: () => {
+              console.log('TBD');
+            },
+            entryLink: async () => {
+              console.log('WIP');
+              const contentTypes = getValidationRules(field, 'linkContentType');
+              // const selectedEntry = await this.props.sdk.dialogs.selectSingleEntry({
+              const selectedEntry = await this.props.sdk.dialogs.selectMultipleEntries({
+                contentTypes
+              });
+              console.log({ selectedEntry });
+            }
+          })
+        )}
       </Form>
     );
   }

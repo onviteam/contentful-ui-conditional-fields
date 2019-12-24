@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Button,
   EntityList,
   EntityListItem,
   Option,
@@ -11,7 +12,7 @@ import {
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { FIELD_TYPES } from './constants';
 
-function renderWidget(field, changeHandler) {
+function renderWidget(field, handlers) {
   if (field.omitted) {
     return null;
   }
@@ -37,7 +38,7 @@ function renderWidget(field, changeHandler) {
               value={value}
               disabled={disabled}
               required={required}
-              onChange={changeHandler}>
+              onChange={handlers.fieldChange}>
               {field.options.map(option => (
                 <Option value={option} key={option}>
                   {option}
@@ -58,7 +59,7 @@ function renderWidget(field, changeHandler) {
             required={required}
             testId={ids.field}
             value={value}
-            onChange={changeHandler}
+            onChange={handlers.fieldChange}
           />
         </div>
       );
@@ -68,15 +69,28 @@ function renderWidget(field, changeHandler) {
       return (
         <div id={ids.wrapper} key={ids.field}>
           <SectionHeading>{field.label}</SectionHeading>
-          <p>Widget in progress</p>
+          <p className="f36-font-size--m">
+            <em>Widget in progress</em>
+          </p>
           <EntityList disabled={disabled} required={required}>
             <EntityListItem
               title="Entry 1"
-              description="Work in progress"
+              description="TODO: fetch existing linked entries; implement create and link actions"
               contentType="Item"
               status="published"
             />
           </EntityList>
+          <div className="f36-margin-top--xs">
+            <Button
+              buttonType="muted"
+              className="f36-margin-right--xs"
+              onClick={handlers.entryCreate}>
+              Create and link an entry
+            </Button>
+            <Button buttonType="muted" onClick={handlers.entryLink}>
+              Link existing entry
+            </Button>
+          </div>
         </div>
       );
     case FIELD_TYPES.RichText:
@@ -94,7 +108,7 @@ function renderWidget(field, changeHandler) {
           <TextInput
             testId={ids.field}
             disabled={disabled}
-            onChange={changeHandler}
+            onChange={handlers.fieldChange}
             value={value?.toString()}
           />
         </div>
